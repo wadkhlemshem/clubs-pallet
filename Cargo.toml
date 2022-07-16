@@ -1,12 +1,12 @@
 [package]
-name = "clubs-pallet"
+name = "pallet-clubs"
 version = "0.1.0"
 description = "FRAME pallet for handling club membership."
 authors = ["Johanan Wahlang <https://github.com/wadkhlemshem>"]
 edition = "2021"
 license = "Unlicense"
 publish = false
-repository = "https://github.com/wadkhlemshem/clubs-pallet"
+repository = "https://github.com/wadkhlemshem/pallet-clubs"
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
