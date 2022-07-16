@@ -37,6 +37,10 @@ pub mod pallet {
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
+        /// User added to club.
+		UserAddedToClub { club_number: u32, user: T::AccountId },
+		/// User removed from club.
+		UserRemovedFromClub { club_number: u32, user: T::AccountId },
 	}
 
 	// Errors inform users that something went wrong.
