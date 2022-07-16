@@ -18,6 +18,10 @@ pub mod pallet {
 	pub trait Config: frame_system::Config {
 		/// Because this pallet emits events, it depends on the runtime's definition of an event.
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+
+        /// The maximum size of a club.
+		#[pallet::constant]
+		type MaxClubSize: Get<u32>;
 	}
 
 	#[pallet::pallet]
