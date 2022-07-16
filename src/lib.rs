@@ -66,7 +66,7 @@ pub mod pallet {
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         /// Add a user to a club. If the club does not exist, it will be created.
-        #[pallet::weight(50_000_000)]
+        #[pallet::weight(10_000 + T::DbWeight::get().reads_writes(1, 2))]
         pub fn add_user_to_club(
             origin: OriginFor<T>,
             club_number: u32,
@@ -92,7 +92,7 @@ pub mod pallet {
         }
 
         /// Remove a user from a club.
-        #[pallet::weight(50_000_000)]
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn remove_user_from_club(
             origin: OriginFor<T>,
             club_number: u32,
