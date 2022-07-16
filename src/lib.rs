@@ -30,10 +30,7 @@ pub mod pallet {
 
 	// The pallet's runtime storage items.
 	#[pallet::storage]
-	#[pallet::getter(fn something)]
-	// Learn more about declaring storage items:
-	// https://docs.substrate.io/v3/runtime/storage#declaring-storage-items
-	pub type Something<T> = StorageValue<_, u32>;
+    pub type Clubs<T: Config> = StorageMap<_, Twox64Concat, u32, BoundedBTreeSet<T::AccountId,T::MaxClubSize> >;
 
 	// Pallets use events to inform users when important changes are made.
 	// https://docs.substrate.io/v3/runtime/events-and-errors
