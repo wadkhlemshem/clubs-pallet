@@ -50,6 +50,10 @@ pub mod pallet {
 	pub enum Error<T> {
 		/// Club already exists.
 		ClubAlreadyExists,
+        /// Club membership is full.
+		ClubFull,
+		/// Club does not exist.
+		ClubDoesNotExist,
 	}
 
 	// Dispatchable functions allows users to interact with the pallet and invoke state changes.
@@ -73,6 +77,29 @@ pub mod pallet {
 			};
 			Self::deposit_event(Event::<T>::ClubCreated { club_number });
 			Ok(())
+		}
+
+        /// Add a user to a club.
+		#[pallet::weight(50_000_000)]
+		pub fn add_user_to_club(
+			origin: OriginFor<T>,
+			club_number: u32,
+			user: T::AccountId,
+		) -> DispatchResult {
+			ensure_root(origin)?;
+
+			Clubs::<T>::try_mutate(&club_number, |club| {
+				match club {
+					None => {
+						Err(Error::<T>::ClubDoesNotExist.into())
+					},
+					Some(club) => {
+						club.try_insert(user.clone()).map_err(|_| Error::<T>::ClubFull)
+					},
+				}
+			})?;
+            Self::deposit_event(Event::<T>::UserAddedToClub { club_number, user });
+            Ok(())
 		}
 	}
 }
