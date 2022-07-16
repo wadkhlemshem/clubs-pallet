@@ -52,8 +52,6 @@ pub mod pallet {
     // Errors inform users that something went wrong.
     #[pallet::error]
     pub enum Error<T> {
-        /// Club already exists.
-        ClubAlreadyExists,
         /// Club membership is full.
         ClubFull,
         /// Club does not exist.
@@ -67,23 +65,7 @@ pub mod pallet {
     // Dispatchable functions must be annotated with a weight and must return a DispatchResult.
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        /// Create a new club.
-        #[pallet::weight(50_000_000)]
-        pub fn create_club(origin: OriginFor<T>, club_number: u32) -> DispatchResult {
-            ensure_root(origin)?;
-            match Clubs::<T>::get(club_number) {
-                Some(_) => return Err(Error::<T>::ClubAlreadyExists.into()),
-                None => {
-                    let club: BoundedBTreeSet<T::AccountId, T::MaxClubSize> =
-                        BoundedBTreeSet::new();
-                    <Clubs<T>>::insert(&club_number, club);
-                }
-            };
-            Self::deposit_event(Event::<T>::ClubCreated { club_number });
-            Ok(())
-        }
-
-        /// Add a user to a club.
+        /// Add a user to a club. If the club does not exist, it will be created.
         #[pallet::weight(50_000_000)]
         pub fn add_user_to_club(
             origin: OriginFor<T>,
@@ -91,6 +73,13 @@ pub mod pallet {
             user: T::AccountId,
         ) -> DispatchResult {
             ensure_root(origin)?;
+
+            if let None = Clubs::<T>::get(club_number) {
+                let club: BoundedBTreeSet<T::AccountId, T::MaxClubSize> =
+                        BoundedBTreeSet::new();
+                <Clubs<T>>::insert(&club_number, club);
+            };
+            Self::deposit_event(Event::<T>::ClubCreated { club_number });
 
             Clubs::<T>::try_mutate(&club_number, |club| match club {
                 None => Err(Error::<T>::ClubDoesNotExist.into()),
