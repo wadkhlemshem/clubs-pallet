@@ -54,6 +54,8 @@ pub mod pallet {
 		ClubFull,
 		/// Club does not exist.
 		ClubDoesNotExist,
+        /// User does not exist in club.
+        UserNotInClub,
 	}
 
 	// Dispatchable functions allows users to interact with the pallet and invoke state changes.
@@ -99,6 +101,32 @@ pub mod pallet {
 				}
 			})?;
             Self::deposit_event(Event::<T>::UserAddedToClub { club_number, user });
+            Ok(())
+		}
+
+        /// Remove a user from a club.
+		#[pallet::weight(50_000_000)]
+		pub fn remove_user_from_club(
+			origin: OriginFor<T>,
+			club_number: u32,
+			user: T::AccountId,
+		) -> DispatchResult {
+			ensure_root(origin)?;
+
+            Clubs::<T>::try_mutate(&club_number, |club| -> DispatchResult {
+				match club {
+					None => Err(Error::<T>::ClubDoesNotExist.into()),
+					Some(club) => {
+						let user_exists = club.remove(&user);
+						if !user_exists {
+							Err(Error::<T>::UserNotInClub.into())
+						} else {
+                            Ok(())
+                        }
+					}
+				}
+			})?;
+            Self::deposit_event(Event::<T>::UserRemovedFromClub { club_number, user });
             Ok(())
 		}
 	}
